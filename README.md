@@ -13,10 +13,59 @@ A PHP wrapper for the Gap Messenger SDP API.
 You will find everything you need to know to use this API in the [wiki](https://github.com/GapAfzar/Gap-SDP-API/wiki)
 
 ## Laravel Installation
-
+ 1- 
 ```sh
-$ composer required saber13812002
+$ composer require saber13812002/gap-sdp-api
 ```
+ 
+### How to use in Laravel?
+
+ 2- create endpoint in route/api.php
+
+```php
+Route::post('/webhook-bot-get-id', [BotMotherController::class, 'getIdMother']);
+```
+
+ 3- set this url as callback in Gap settings:
+
+```php
+https://yourdomain.com/api/webhook-bot-get-id?token=aaaaaaaaaaaaaaa1111111111111
+```
+
+ 4- you can use alias name  
+
+```php
+use Gap\SDP\Api as GapBot;
+```
+
+
+```php
+$bot = new GapBot($request->input('token'), $request);
+```
+
+
+5- use these functions like Telegram and Bale
+
+```php
+$bot->ChatID()
+$bot->Text()
+$bot->Token()
+$bot->Type()
+```
+
+another similarity to telegram
+
+```php
+        $chat_id = $messenger->ChatID();
+
+        $content = [
+            'chat_id' => $chat_id,
+            'text' => $message
+        ];
+
+        $messenger->sendMessage($content);
+```
+
 
 ### What is Gap?
 According to [Gap Messenger](https://gap.im/):

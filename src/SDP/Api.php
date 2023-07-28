@@ -2,7 +2,10 @@
 
 namespace Gap\SDP;
 
-class Api {
+use Illuminate\Http\Request;
+
+class Api
+{
 
   protected $baseURL = 'https://api.gap.im/';
 
@@ -10,26 +13,66 @@ class Api {
 
   protected $lastMessage;
 
-  public function __construct($token) {
+  protected $chatId;
+
+  protected $type;
+
+  protected $text;
+
+//  public function __construct($token)
+//  {
+//    $this->token = $token;
+//    if (is_null($this->token)) {
+//      throw new \Exception('Required "token" key not supplied');
+//    }
+//  }
+
+  public function __construct($token, Request $request = null)
+  {
     $this->token = $token;
+    $this->type = "gap";
+    $this->chatId = $request->input("chat_id");
+    $this->text = $request->has("text") ? $request->input("text") : "";
     if (is_null($this->token)) {
       throw new \Exception('Required "token" key not supplied');
     }
   }
 
-  public function getLastMessage() {
+  public function ChatID()
+  {
+    return $this->chatId;
+  }
+
+  public function Text()
+  {
+    return $this->text;
+  }
+
+  public function Type()
+  {
+    return $this->type;
+  }
+
+  public function Token()
+  {
+    return $this->token;
+  }
+
+  public function getLastMessage()
+  {
     return $this->lastMessage;
   }
 
   /**
    * Send Action.
    *
-   * @param int            $chat_id
-   * @param string         $action
+   * @param int $chat_id
+   * @param string $action
    *
    * @return Array
    */
-  public function sendAction($chat_id, $action) {
+  public function sendAction($chat_id, $action)
+  {
     $actions = array(
       'typing',
     );
@@ -38,20 +81,21 @@ class Api {
       return $this->sendRequest($action, $params, 'sendAction');
     }
 
-    throw new \Exception('Invalid Action! Accepted value: '.implode(', ', $actions));
+    throw new \Exception('Invalid Action! Accepted value: ' . implode(', ', $actions));
   }
 
   /**
    * Send text messages.
    *
-   * @param int            $chat_id
-   * @param string         $data
-   * @param string         $reply_keyboard
-   * @param array          $inline_keyboard
+   * @param int $chat_id
+   * @param string $data
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendText($chat_id, $data, $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendText($chat_id, $data, $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $params = compact('chat_id', 'data');
     if ($reply_keyboard) {
       $params['reply_keyboard'] = $reply_keyboard;
@@ -67,19 +111,25 @@ class Api {
     return $message ? json_decode($message, true)['id'] : false;
   }
 
+  public function sendMessage(array $content)
+  {
+    return $this->sendText($content['chat_id'], $content['text']);
+  }
+
   /**
    * Send Location.
    *
-   * @param int            $chat_id
-   * @param float          $latitude
-   * @param float          $longitude
-   * @param string         $description
-   * @param string         $reply_keyboard
-   * @param array          $inline_keyboard
+   * @param int $chat_id
+   * @param float $latitude
+   * @param float $longitude
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendLocation($chat_id, $lat, $long, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendLocation($chat_id, $lat, $long, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $data = json_encode(compact('lat', 'long', 'desc'));
     $params = compact('chat_id', 'data');
     if ($reply_keyboard) {
@@ -99,15 +149,16 @@ class Api {
   /**
    * Send Contact.
    *
-   * @param int            $chat_id
-   * @param string         $phone
-   * @param string         $name
-   * @param string         $reply_keyboard
-   * @param array          $inline_keyboard
+   * @param int $chat_id
+   * @param string $phone
+   * @param string $name
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendContact($chat_id, $phone, $name, $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendContact($chat_id, $phone, $name, $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $data = json_encode(compact('phone', 'name'));
     $params = compact('chat_id', 'data');
     if ($reply_keyboard) {
@@ -127,15 +178,16 @@ class Api {
   /**
    * Send Image.
    *
-   * @param int            $chat_id
-   * @param string         $image
-   * @param string         $description
-   * @param string         $reply_keyboard
-   * @param array          $inline_keyboard
+   * @param int $chat_id
+   * @param string $image
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendImage($chat_id, $image, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendImage($chat_id, $image, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $msgType = 'image';
     if (!json_decode($image)) {
       if (!is_file($image)) {
@@ -163,15 +215,16 @@ class Api {
   /**
    * Send Audio.
    *
-   * @param int             $chat_id
-   * @param string          $audio
-   * @param string          $description
-   * @param string          $reply_keyboard
-   * @param array           $inline_keyboard
+   * @param int $chat_id
+   * @param string $audio
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendAudio($chat_id, $audio, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendAudio($chat_id, $audio, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $msgType = 'audio';
     if (!json_decode($audio)) {
       if (!is_file($audio)) {
@@ -199,15 +252,16 @@ class Api {
   /**
    * Send Video.
    *
-   * @param int             $chat_id
-   * @param string          $video
-   * @param string          $description
-   * @param string          $reply_keyboard
-   * @param array           $inline_keyboard
+   * @param int $chat_id
+   * @param string $video
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendVideo($chat_id, $video, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendVideo($chat_id, $video, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $msgType = 'video';
     if (!json_decode($video)) {
       if (!is_file($video)) {
@@ -235,15 +289,16 @@ class Api {
   /**
    * Send File.
    *
-   * @param int             $chat_id
-   * @param string          $file
-   * @param string          $description
-   * @param string          $reply_keyboard
-   * @param array           $inline_keyboard
+   * @param int $chat_id
+   * @param string $file
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendFile($chat_id, $file, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendFile($chat_id, $file, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $msgType = 'file';
     if (!json_decode($file)) {
       if (!is_file($file)) {
@@ -271,15 +326,16 @@ class Api {
   /**
    * Send Voice.
    *
-   * @param int             $chat_id
-   * @param string          $voice
-   * @param string          $description
-   * @param string          $reply_keyboard
-   * @param array           $inline_keyboard
+   * @param int $chat_id
+   * @param string $voice
+   * @param string $description
+   * @param string $reply_keyboard
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function sendVoice($chat_id, $voice, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null) {
+  public function sendVoice($chat_id, $voice, $desc = '', $reply_keyboard = null, $inline_keyboard = null, $form = null)
+  {
     $msgType = 'voice';
     if (!json_decode($voice)) {
       if (!is_file($voice)) {
@@ -307,14 +363,15 @@ class Api {
   /**
    * Edit Message.
    *
-   * @param int             $chat_id
-   * @param int             $message_id
-   * @param string          $data
-   * @param array           $inline_keyboard
+   * @param int $chat_id
+   * @param int $message_id
+   * @param string $data
+   * @param array $inline_keyboard
    *
    * @return Array
    */
-  public function editMessage($chat_id, $message_id, $data = null, $inline_keyboard = null) {
+  public function editMessage($chat_id, $message_id, $data = null, $inline_keyboard = null)
+  {
     $params = compact('chat_id', 'message_id', 'data', 'inline_keyboard');
     if ($inline_keyboard) {
       if (!is_array($inline_keyboard)) {
@@ -328,12 +385,13 @@ class Api {
   /**
    * Delete Message.
    *
-   * @param int             $chat_id
-   * @param int             $message_id
+   * @param int $chat_id
+   * @param int $message_id
    *
    * @return Array
    */
-  public function deleteMessage($chat_id, $message_id) {
+  public function deleteMessage($chat_id, $message_id)
+  {
     $params = compact('chat_id', 'message_id');
     return $this->sendRequest(null, $params, 'deleteMessage');
   }
@@ -341,14 +399,15 @@ class Api {
   /**
    * Answer Callback.
    *
-   * @param int             $chat_id
-   * @param int             $callback_id
-   * @param string          $text
-   * @param bool            $show_alert
+   * @param int $chat_id
+   * @param int $callback_id
+   * @param string $text
+   * @param bool $show_alert
    *
    * @return Array
    */
-  public function answerCallback($chat_id, $callback_id, $text, $show_alert = false) {
+  public function answerCallback($chat_id, $callback_id, $text, $show_alert = false)
+  {
     $params = compact('chat_id', 'callback_id', 'text', 'show_alert');
     if ($show_alert) {
       $params['show_alert'] = 'true';
@@ -361,33 +420,35 @@ class Api {
   /**
    * Send Invoice.
    *
-   * @param int             $chat_id
-   * @param int             $amount
-   * @param string          $description
-   * @param string          $currency
+   * @param int $chat_id
+   * @param int $amount
+   * @param string $description
+   * @param string $currency
    *
    * @return string
    */
-  public function sendInvoice($chat_id, $amount, $description, $expire_date='', $currency = 'IRR') {
-    $expire_date = (is_numeric($expire_date) && (int) $expire_date == $expire_date && $expire_date >= 300 && $expire_date <= 604800) ? $expire_date : 86400;
+  public function sendInvoice($chat_id, $amount, $description, $expire_date = '', $currency = 'IRR')
+  {
+    $expire_date = (is_numeric($expire_date) && (int)$expire_date == $expire_date && $expire_date >= 300 && $expire_date <= 604800) ? $expire_date : 86400;
     $params = compact('chat_id', 'amount', 'description', 'expire_date', 'currency');
     $result = $this->sendRequest('text', $params, 'invoice');
     $result = json_decode($result, true);
     return $result['id'];
   }
 
-    /**
+  /**
    * Send Image Invoice.
    *
-   * @param int             $chat_id
-   * @param int             $amount
-   * @param string          $image
-   * @param string          $description
-   * @param string          $currency
+   * @param int $chat_id
+   * @param int $amount
+   * @param string $image
+   * @param string $description
+   * @param string $currency
    *
    * @return string
    */
-  public function sendImageInvoice($chat_id, $amount, $image, $description, $expire_date='', $currency = 'IRR') {
+  public function sendImageInvoice($chat_id, $amount, $image, $description, $expire_date = '', $currency = 'IRR')
+  {
 
     $msgType = 'image';
     if (!json_decode($image)) {
@@ -396,7 +457,7 @@ class Api {
       }
       list($msgType, $image) = $this->uploadFile('image', $image, $description);
     }
-    $expire_date = (is_numeric($expire_date) && (int) $expire_date == $expire_date && $expire_date >= 300 && $expire_date <= 604800) ? $expire_date : 86400;
+    $expire_date = (is_numeric($expire_date) && (int)$expire_date == $expire_date && $expire_date >= 300 && $expire_date <= 604800) ? $expire_date : 86400;
     $params = compact('chat_id', 'amount', 'currency', 'expire_date');
     $params['image'] = $image;
 
@@ -409,12 +470,13 @@ class Api {
   /**
    * Invoice inquiry.
    *
-   * @param int             $chat_id
-   * @param int             $ref_id (invoiceId)
+   * @param int $chat_id
+   * @param int $ref_id (invoiceId)
    *
    * @return array
    */
-  public function invoiceInquiry($chat_id, $ref_id) {
+  public function invoiceInquiry($chat_id, $ref_id)
+  {
     $params = compact('chat_id', 'ref_id');
     $result = $this->sendRequest(null, $params, 'invoice/inquiry');
     $result = json_decode($result, true);
@@ -426,12 +488,13 @@ class Api {
   /**
    * Invoice verify.
    *
-   * @param int             $chat_id
-   * @param int             $ref_id (invoiceId)
+   * @param int $chat_id
+   * @param int $ref_id (invoiceId)
    *
    * @return array
    */
-  public function invoiceVerify($chat_id, $ref_id) {
+  public function invoiceVerify($chat_id, $ref_id)
+  {
     $params = compact('chat_id', 'ref_id');
     $result = $this->sendRequest(null, $params, 'invoice/verify');
     $result = json_decode($result, true);
@@ -441,12 +504,13 @@ class Api {
   /**
    * Pay verify.
    *
-   * @param int             $chat_id
-   * @param int             $ref_id
+   * @param int $chat_id
+   * @param int $ref_id
    *
    * @return bool
    */
-  public function payVerify($chat_id, $ref_id) {
+  public function payVerify($chat_id, $ref_id)
+  {
     $params = compact('chat_id', 'ref_id');
     $result = $this->sendRequest(null, $params, 'payment/verify');
     $result = json_decode($result, true);
@@ -456,12 +520,13 @@ class Api {
   /**
    * Pay inquiry.
    *
-   * @param int             $chat_id
-   * @param int             $ref_id
+   * @param int $chat_id
+   * @param int $ref_id
    *
    * @return array
    */
-  public function payInquiry($chat_id, $ref_id) {
+  public function payInquiry($chat_id, $ref_id)
+  {
     $params = compact('chat_id', 'ref_id');
     $result = $this->sendRequest(null, $params, 'payment/inquiry');
     $result = json_decode($result, true);
@@ -473,12 +538,13 @@ class Api {
   /**
    * Request wallet charge.
    *
-   * @param int             $chat_id
-   * @param int             $ref_id
+   * @param int $chat_id
+   * @param int $ref_id
    *
    * @return bool
    */
-  public function requestWalletCharge($chat_id, $desc = null) {
+  public function requestWalletCharge($chat_id, $desc = null)
+  {
     $params = compact('chat_id', 'desc');
     return $this->sendRequest(null, $params, 'requestWalletCharge');
   }
@@ -486,13 +552,14 @@ class Api {
   /**
    * Reply keyboard.
    *
-   * @param array        $keyboard
-   * @param bool         $once
-   * @param bool         $selective
+   * @param array $keyboard
+   * @param bool $once
+   * @param bool $selective
    *
    * @return String
    */
-  public function replyKeyboard($keyboard, $once = true, $selective = false) {
+  public function replyKeyboard($keyboard, $once = true, $selective = false)
+  {
     if (!is_array($keyboard)) {
       throw new \Exception("keyboard must be array");
     }
@@ -509,7 +576,8 @@ class Api {
    * @return mixed
    * @throws \Exception
    */
-  public function getGameData($chat_id, $type) {
+  public function getGameData($chat_id, $type)
+  {
     $params = compact('chat_id', 'type');
     $result = $this->sendRequest(null, $params, 'getGameData');
     return $result ? json_decode($result, true)['data'] : false;
@@ -526,7 +594,8 @@ class Api {
    * @return mixed
    * @throws \Exception
    */
-  public function setGameData($chat_id, $type, $data, $force = false) {
+  public function setGameData($chat_id, $type, $data, $force = false)
+  {
     $params = compact('chat_id', 'type', 'data', 'force');
     return $this->sendRequest(null, $params, 'gameData');
   }
@@ -540,7 +609,8 @@ class Api {
    * @return mixed
    * @throws \Exception
    */
-  public function getGameConfig($chat_id, $key = null){
+  public function getGameConfig($chat_id, $key = null)
+  {
     $params = compact('chat_id', 'key');
     $result = $this->sendRequest(null, $params, 'getGameConfig');
     return $result ? json_decode($result, true)['configs'] : false;
@@ -556,7 +626,8 @@ class Api {
    * @return mixed
    * @throws \Exception
    */
-  public function gameEvent($chat_id, $event, $value){
+  public function gameEvent($chat_id, $event, $value)
+  {
     if (empty($event)) {
       throw new \Exception('Event required!');
     }
@@ -576,22 +647,24 @@ class Api {
    * @return mixed
    * @throws \Exception
    */
-  public function leaderBoard($chat_id, $type = 'all') {
+  public function leaderBoard($chat_id, $type = 'all')
+  {
     $types = array(
       'all',
       'month',
       'week',
       'day'
     );
-    if(!in_array($type, $types)){
-      throw new \Exception('Invalid Type! Accepted value: '.implode(', ', $types));
+    if (!in_array($type, $types)) {
+      throw new \Exception('Invalid Type! Accepted value: ' . implode(', ', $types));
     }
     $params = compact('chat_id', 'type');
     $result = $this->sendRequest(null, $params, 'leaderBoard');
     return $result ? json_decode($result, true) : false;
   }
 
-  private function sendRequest($msgType, $params, $method = 'sendMessage') {
+  private function sendRequest($msgType, $params, $method = 'sendMessage')
+  {
     if ($msgType) {
       $params['type'] = $msgType;
     }
@@ -623,7 +696,8 @@ class Api {
     return $curl_result;
   }
 
-  private function uploadFile($type, $file, $desc) {
+  private function uploadFile($type, $file, $desc)
+  {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime_type = finfo_file($finfo, $file);
     $data[$type] = new \CurlFile($file, $mime_type, basename($file));
