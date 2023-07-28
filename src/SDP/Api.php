@@ -17,7 +17,11 @@ class Api
 
   protected $type;
 
+  protected $data;
+
   protected $text;
+
+  protected $messageType;
 
 //  public function __construct($token)
 //  {
@@ -32,7 +36,9 @@ class Api
     $this->token = $token;
     $this->type = "gap";
     $this->chatId = $request->input("chat_id");
-    $this->text = $request->has("text") ? $request->input("text") : "";
+    $this->messageType = $request->input("type");
+    $this->data = $request->input("data");
+    $this->text = $this->messageType == "text" ? $this->data : "";
     if (is_null($this->token)) {
       throw new \Exception('Required "token" key not supplied');
     }
@@ -56,6 +62,16 @@ class Api
   public function Token()
   {
     return $this->token;
+  }
+
+  public function MessageType()
+  {
+    return $this->messageType;
+  }
+
+  public function Data()
+  {
+    return $this->data;
   }
 
   public function getLastMessage()
