@@ -49,6 +49,21 @@ class Api
     return $this->chatId;
   }
 
+  public function Username()
+  {
+    return "";
+  }
+
+  public function FirstName()
+  {
+    return "";
+  }
+
+  public function LastName()
+  {
+    return "";
+  }
+
   public function Text()
   {
     return $this->text;
