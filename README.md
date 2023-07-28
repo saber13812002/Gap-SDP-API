@@ -12,12 +12,10 @@ A PHP wrapper for the Gap Messenger SDP API.
 
 You will find everything you need to know to use this API in the [wiki](https://github.com/GapAfzar/Gap-SDP-API/wiki)
 
-## Installation
+## Laravel Installation
 
 ```sh
-$ git clone git@github.com:GapAfzar/Gap-SDP-API.git
-$ cd Gap-SDP-API/
-$ composer dumpautoload
+$ composer required saber13812002
 ```
 
 ### What is Gap?

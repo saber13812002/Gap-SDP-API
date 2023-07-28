@@ -1,9 +1,9 @@
 {
-    "name": "gapafzar/gap-sdp-api",
+    "name": "saber13812002/gap-sdp-api",
     "type": "library",
     "description": "A PHP wrapper for the Gap Messenger SDP API.",
     "license": "MIT",
-    "homepage": "https://github.com/GapAfzar/Gap-SDP-API",
+    "homepage": "https://github.com/saber13812002/Gap-SDP-API",
     "keywords": [
         "Gap",
         "Gap-API",
@@ -12,9 +12,9 @@
 	    "Gap-SDP-API"
     ],
     "support": {
-        "issues": "https://github.com/GapAfzar/Gap-SDP-API/issues",
-        "wiki": "https://github.com/GapAfzar/Gap-SDP-API/wiki",
-        "source": "https://github.com/GapAfzar/Gap-SDP-API"
+        "issues": "https://github.com/saber13812002/Gap-SDP-API/issues",
+        "wiki": "https://github.com/saber13812002/Gap-SDP-API/wiki",
+        "source": "https://github.com/saber13812002/Gap-SDP-API"
     },
     "autoload": {
         "psr-4": {
@@ -29,6 +29,11 @@
         {
             "name": "Mohammad Esmaeilpour",
             "email": "esmaeilpoor.info@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Saber Tabatabaee",
+            "email": "saber.tabatabaee@gmail.com",
             "role": "Developer"
         }
     ]
