@@ -39,9 +39,15 @@ class Api
     $this->messageType = $request->input("type");
     $this->data = $request->input("data");
     $this->text = $this->messageType == "text" ? $this->data : "";
+
     if (is_null($this->token)) {
       throw new \Exception('Required "token" key not supplied');
     }
+  }
+
+  public function Type(): string
+  {
+    return $this->type;
   }
 
   public function ChatID()
@@ -69,7 +75,7 @@ class Api
     return $this->text;
   }
 
-  public function Type()
+  public function BotType()
   {
     return $this->type;
   }
@@ -101,6 +107,7 @@ class Api
    * @param string $action
    *
    * @return Array
+   * @throws \Exception
    */
   public function sendAction($chat_id, $action)
   {
@@ -124,6 +131,7 @@ class Api
    * @param array $inline_keyboard
    *
    * @return Array
+   * @throws \Exception
    */
   public function sendText($chat_id, $data, $reply_keyboard = null, $inline_keyboard = null, $form = null)
   {
